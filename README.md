@@ -1,4 +1,4 @@
-Python-nLight-settings-compare-tool
+Python-settings-compare-tool
 ===================================
 
 Takes 2 Device Settings Reports and compares them.  If any differences are found, a text file with the differences is created.
