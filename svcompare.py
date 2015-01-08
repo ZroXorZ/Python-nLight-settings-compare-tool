@@ -90,11 +90,10 @@ def find_diff(list1, list2, array1, array2):
 			index += 1
 		else:
 			text_file = open("differences.txt", "a")
-			text_file.write("Difference Found: " + str(list1[2]) +
-			                " - " + str(array1[0][index]) + " = " +
-							str(list1[index]) + " / " + str(list2[2]) +
-							" - " + str(array2[0][index]) + " = " +
-							str(list2[index]) + "\n")
+			text_file.write("Difference Found: Original ~ {0} - {1} = {2} / New ~ {3} - {4} = {5} \n".format(
+							str(list1[2]), str(array1[0][index]), 
+							str(list1[index]), str(list2[2]), 
+							str(array2[0][index]), str(list2[index])))
 			text_file.close()
 			index += 1
 			
@@ -115,7 +114,7 @@ def main():
 	objs = check_for_csv()
 	compare(objs[0].array, objs[1].array)
 	print_diff()
-	input("\n\nPress the Enter Key to quit...")
+	raw_input("\n\nPress the Enter Key to quit...")
 	
 if __name__ == "__main__":
 	main()
