@@ -15,4 +15,4 @@ This script should be compatible accross multiple platforms as it was written in
 TO USE:
 ####################
 
-Place this script in the same directory as 2 (and only 2) Device Settings reports.  Double Click the script and away it goes.  Alternatively, you can open a console in the directory and enter the following: python svcompare.py
+Place this script in the same directory as 2 (and only 2) Device Settings reports.  Double Click the svcompare.bat file and away it goes.
