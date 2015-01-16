@@ -22,6 +22,8 @@ the time of startup.
 import os
 import sys
 import csv
+import tkinter
+from tkinter.constants import *
 
 class CSV(object):
 	"""A CSV file processed to an array of strings"""
@@ -37,11 +39,35 @@ class CSV(object):
 				array.append(row)
 		return array
 		
-def quit():
-	sys.exit()
+class App(tkinter.Frame):
+	"""The GUI of the Program"""
 	
-def clear():
-	os.system("cls")
+	def __init__(self, master):
+		super(App, self).__init__(master)
+		self.pack(side=LEFT, fill=BOTH)
+		self.create_widgets()
+		
+	def create_widgets(self):
+		self.label = tkinter.Label(self, text="Please Wait: Checking CSV's...")
+		self.label.pack(side=TOP, anchor=W)
+		
+		self.label2 = tkinter.Label(self)
+		self.label2.pack(side=TOP, anchor=W, after=self.label)
+		
+		self.label3 = tkinter.Label(self)
+		self.label3.pack(side=TOP, anchor=W, after=self.label2)
+		
+		self.scroll = tkinter.Scrollbar(self)
+		self.scroll.pack(side=RIGHT, fill=Y, expand=1)
+		
+		self.button = tkinter.Button(self, text="Exit")
+		self.button.pack(side=BOTTOM, anchor=E, after=self.scroll, padx=25)
+		
+		self.txt = tkinter.Text(self, height=30, width=97, wrap=WORD,
+								yscrollcommand=self.scroll.set)
+		self.txt.pack(side=BOTTOM, fill=BOTH, after=self.button, expand=1)
+					  
+		self.scroll.configure(command=self.txt.yview)
 	
 def check_for_csv():
 	count = 0
@@ -54,20 +80,14 @@ def check_for_csv():
 			else:
 				continue
 				
+	objs = []
 	if count < 2:
-		clear()
-		print("Error: 2 files needed to compare.  Not Enough found in")
-		print("the current directory.")
-		input("\n\nPress the Enter Key to quit...")
-		quit()
+		objs.append("<2")
+		return objs
 	elif count > 2:
-		clear()
-		print("Error: 2 files needed to compare.  Found more than 2 files")
-		print("in the current directory.")
-		input("\n\nPress the Enter Key to quit...")
-		quit()
+		objs.append(">2")
+		return objs
 	else:
-		objs = []
 		for path in curr_path:
 			objs.append(CSV(path))
 		return objs
@@ -98,7 +118,7 @@ def compare(array1, array2):
 def write_change(id, var):
 	if var == "deleted":
 		with open("differences.txt", "a") as f:
-			f.write("* Device {0} was in the original file but is not in the new file\n.".format(id))
+			f.write("* Device {0} was in the original file but is not in the new file.\n".format(id))
 	else:
 		with open("differences.txt", "a") as f:
 			f.write("* Device {0} was not in the original file but is in the new file.\n".format(id))
@@ -116,23 +136,33 @@ def find_diff(list1, list2, array1, array2):
 								str(array2[0][index]), str(list2[index])))
 			index += 1
 			
-def print_diff():
+def print_diff(frame):
+	text = ""
 	if os.path.isfile("differences.txt"):
-		print ("Differneces found - log generated:\n\n")
+		text = "Differences found - log generated as differences.txt\n\n"
 		with open("differences.txt", "r") as f:
 			for line in f:
-				print (line)
+				frame.txt.insert(END, line)
 	else:
-		print ("No differences were found.  Original settings intact.")
+		text = "No differences were found.  Original settings intact."
+	return text
 		
 def main():
+	tk = tkinter.Tk()
+	tk.title("Device Settings Report Comparison Tool")
+	tk.geometry("800x600")
+	frame = App(tk)
+	frame.button.configure(command=tk.destroy)
 	objs = []
-	clear()
-	print ("Checking CSV files, please wait...\n")
 	objs = check_for_csv()
-	compare(objs[0].array, objs[1].array)
-	print_diff()
-	input("\n\nPress the Enter Key to quit...")
+	if objs[0] == "<2":
+		frame.label2.configure(text="Error: 2 files needed to compare.  Only 1 file found in the current directory.")
+	elif objs[0] == ">2":
+		frame.label2.configure(text="Error: 2 files needed to compare.  Found more than 2 files in the current directory.")
+	else:
+		compare(objs[0].array, objs[1].array)
+		frame.label3.configure(text = print_diff(frame))
+	tk.mainloop()
 	
 if __name__ == "__main__":
 	main()
